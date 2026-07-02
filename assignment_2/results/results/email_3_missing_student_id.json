@@ -1,0 +1,13 @@
+{
+  "scenario": "Missing student ID",
+  "email": "Dear Professor,\nI would like to register for the Quantum Computing module.\nMy name is Ahmed Hassan.\nKind regards,\nAhmed",
+  "output": {
+    "student_name": "Ahmed Hassan",
+    "student_id": null,
+    "email_intent": "register",
+    "course_or_exam": "Quantum Computing module",
+    "confidence": "high",
+    "missing_information": []
+  },
+  "valid": true
+}

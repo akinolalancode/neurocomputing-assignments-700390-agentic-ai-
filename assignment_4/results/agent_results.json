@@ -1,0 +1,44 @@
+[
+  {
+    "question": "What is the capital of Austria, and what is its current population?",
+    "tool": "search",
+    "answer": "It is Austria's primate city, with just over two million inhabitants. ... Its larger metropolitan area has a population of nearly 2.9 million, representing nearly ... The country occupies an area of 83,879 km 2 (32,386 sq mi) and has a population of about 9.2 million. Republic of Austria. Republik Österreich.\n[Source: https://en.wikipedia.org/wiki/Vienna]",
+    "time_seconds": 1.76
+  },
+  {
+    "question": "Convert 100 EUR to USD.",
+    "tool": "currency",
+    "answer": "100.0 EUR = 113.83 USD  (1 EUR = 1.1383 USD, as of 2026-07-01)",
+    "time_seconds": 0.6
+  },
+  {
+    "question": "Search for recent information about Agentic AI and summarize it in three sentences.",
+    "tool": "search",
+    "answer": "Feb 18, 2026 · Browse the AI Agent Index, a public database from the MIT Computer Science and Artificial Intelligence Laboratory that documents agentic AI systems that are in use. Explore the forefront of Agentic AI news with Forbes' comprehensive coverage tailored to keep you ahead of emerging trends and expert predictions with in-depth analysis.\n[Source: https://mitsloan.mit.edu/ideas-made-to-matter/agentic-ai-explained]",
+    "time_seconds": 1.62
+  },
+  {
+    "question": "If 1 EUR equals X USD, how much is 250 EUR in USD?",
+    "tool": "currency_calculate",
+    "answer": "250.0 EUR = 284.575 USD  (calculation: 250.0 x 1.1383 = 284.575, date: 2026-07-01)",
+    "time_seconds": 0.55
+  },
+  {
+    "question": "Find information about MCP and explain why it is useful for agent tools.",
+    "tool": "search",
+    "answer": "June 2, 2025 - It complements agent orchestration tools like LangChain, LangGraph, CrewAI, or LlamaIndex by serving as a unified \"toolbox\" from which AI agents can invoke external actions. Instead of replacing orchestration – which determines when and why ... April 2, 2026 - It enables consistent, scalable integration of external tools into model workflows. Microsoft Agent Framework supports integration with Model Context Protocol (MCP) servers, allowing your agents to access external tools and services.\n[Source: https://huggingface.co/blog/Kseniase/mcp]",
+    "time_seconds": 2.01
+  },
+  {
+    "question": "Compare EUR to GBP and USD using live exchange-rate data.",
+    "tool": "multi_currency",
+    "answer": "Live exchange rates for 1 EUR (date: 2026-07-01):\n  1 EUR = 0.85973 GBP\n  1 EUR = 1.1383 USD",
+    "time_seconds": 0.57
+  },
+  {
+    "question": "What is Tesla's current stock price?",
+    "tool": "search",
+    "answer": "1 day ago - Chart does not reflect overnight price. ... Tesla is set to report Q2 delivery numbers on July 2, with estimates ranging from 396,500 to 420,000 vehicles. The company faces declining U.S. sales, while European markets show strong growth. Analyst sentiment is mixed, with some questioning the stock's valuation amid increasing competition. 2 days ago - Get Tesla Inc (TSLA:NASDAQ) real-time stock quotes, news, price and financial information from CNBC.\n[Source: https://finance.yahoo.com/quote/TSLA/]",
+    "time_seconds": 1.47
+  }
+]

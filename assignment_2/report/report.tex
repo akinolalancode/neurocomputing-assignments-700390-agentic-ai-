@@ -1,0 +1,268 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{parskip}
+\usepackage{multirow}
+\usepackage{array}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{jsonstyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single
+}
+\lstset{style=jsonstyle}
+
+\title{Assignment 2: Email Intent Extraction System\\
+\large Prompt Engineering for Structured Information Extraction}
+\author{
+    Student ID: 12349031 \\
+    \small Course: 700.390 Advanced Topics in Neurocomputing:\\
+    \small Explainability, Neuro-Symbolic Computing, AI Agents, LLM,\\
+    \small Quantum Computing, PINN
+}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+This assignment builds an LLM-based system to extract structured information from student emails. The goal is to design a prompt that reliably reads an incoming email and outputs a valid JSON object with predefined fields. The prompt needs to handle different scenarios: clear requests, missing information, ambiguous intent, and emails with irrelevant content.
+
+The core idea is to treat the prompt as an engineering artifact. Instead of writing a one-time message, the prompt is designed as a contract that specifies what the model should do, what constraints it must follow, and exactly what format the output should have.
+
+\section{System Design}
+
+\subsection{Model}
+
+The model used for this assignment is \texttt{Qwen/Qwen2.5-1.5B-Instruct} \cite{qwen2025}. It has 1.5 billion parameters and is instruction-tuned, which means it is designed to follow explicit instructions. It was run on Google Colab using an A100 GPU. This model is larger than the one used in Assignment 1 and better suited for tasks that require following structured output formats.
+
+\subsection{Prompt Contract}
+
+The prompt was designed as a system message with five parts:
+
+\begin{itemize}
+    \item \textbf{Role:} Academic administration assistant
+    \item \textbf{Task:} Extract student data and classify the intent of the email
+    \item \textbf{Context:} Use only the email content, do not rely on outside knowledge
+    \item \textbf{Constraints:} Do not invent or guess any missing information
+    \item \textbf{Output:} Return valid JSON only, with no extra text
+\end{itemize}
+
+The required output format includes six fields: \texttt{student\_name}, \texttt{student\_id}, \texttt{email\_intent}, \texttt{course\_or\_exam}, \texttt{confidence}, and \texttt{missing\_information}.
+
+The full system prompt is shown below:
+
+\begin{lstlisting}[caption={System prompt used for email intent extraction}]
+You are an academic administration assistant.
+Your task is to read a student email and extract information from it.
+
+Extract exactly these fields:
+- student_name: full name of the student, or null if not given
+- student_id: student ID number as a string, or null if not given
+- email_intent: one of "register", "deregister", or "unknown" if unclear
+- course_or_exam: the course or exam mentioned, or null if not given
+- confidence: "high" if intent is clear, "medium" if somewhat clear,
+  "low" if ambiguous
+- missing_information: list of field names that are missing,
+  e.g. ["student_id"]
+
+Rules:
+- Use ONLY what is written in the email. Do not guess or invent anything.
+- If intent is ambiguous or unclear, set email_intent to "unknown"
+  and confidence to "low".
+- Return ONLY valid JSON. No explanation, no markdown, no extra text.
+
+Output format:
+{"student_name": "...", "student_id": "...", "email_intent": "...",
+ "course_or_exam": "...", "confidence": "...", "missing_information": []}
+\end{lstlisting}
+
+The temperature was set to 0.1 to get consistent, deterministic outputs. A low temperature is appropriate here because the task is about extraction, not generation.
+
+\section{Test Emails}
+
+Five test emails were written to cover the required scenarios. Table~\ref{tab:emails} describes each one.
+
+\begin{table}[H]
+\centering
+\caption{Test email scenarios}
+\label{tab:emails}
+\begin{tabular}{clp{9cm}}
+\toprule
+\textbf{Email} & \textbf{Scenario} & \textbf{Description} \\
+\midrule
+1 & Clear registration & Student provides full name, student ID, and course name. Intent is explicitly to register. \\
+2 & Clear deregistration & Student states they want to deregister from an exam. All fields present. \\
+3 & Missing student ID & Student wants to register but does not mention their student ID. \\
+4 & Ambiguous intent & Student says they registered before but is unsure whether to stay or withdraw. \\
+5 & Extra irrelevant info & Email includes unrelated sentences about weather and hiking, but a clear registration request is present. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Results}
+
+All five emails produced valid JSON output. Table~\ref{tab:results} shows the extracted fields for each email. The model returned output in the correct format in all cases, which shows the prompt structure worked well for enforcing the output format.
+
+\begin{table}[H]
+\centering
+\caption{Extraction results for all five test emails}
+\label{tab:results}
+\begin{tabular}{clllll}
+\toprule
+\textbf{Email} & \textbf{Intent} & \textbf{Confidence} & \textbf{ID found} & \textbf{Missing field} & \textbf{Valid JSON} \\
+\midrule
+1 & register   & high & yes & none & \checkmark \\
+2 & deregister & high & yes & none & \checkmark \\
+3 & register   & high & null & \textit{not reported} & \checkmark* \\
+4 & register   & high & yes  & none & \checkmark* \\
+5 & register   & high & yes  & none & \checkmark \\
+\bottomrule
+\multicolumn{6}{l}{\small * Valid JSON but contains incorrect field values (see Discussion)}
+\end{tabular}
+\end{table}
+
+Average generation time per email was 1.99 seconds. Table~\ref{tab:times} shows the time for each email.
+
+\begin{table}[H]
+\centering
+\caption{Generation time per email}
+\label{tab:times}
+\begin{tabular}{clr}
+\toprule
+\textbf{Email} & \textbf{Scenario} & \textbf{Time (s)} \\
+\midrule
+1 & Clear registration        & 3.12 \\
+2 & Clear deregistration      & 1.86 \\
+3 & Missing student ID        & 1.50 \\
+4 & Ambiguous intent          & 1.76 \\
+5 & Extra irrelevant info     & 1.64 \\
+\midrule
+  & \textbf{Average}          & 1.98 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Individual Outputs}
+
+Emails 1 and 2 were fully correct. The model correctly identified the intent, extracted all fields, and returned them in the required format.
+
+For email 3 (missing student ID), the model correctly set \texttt{student\_id} to \texttt{null}, but the \texttt{missing\_information} field was left as an empty list instead of \texttt{["student\_id"]}. The intent and name were extracted correctly.
+
+For email 4 (ambiguous intent), the model returned \texttt{email\_intent: "register"} with \texttt{confidence: "high"}, even though the student explicitly stated they were unsure whether to stay or withdraw. The expected output would be \texttt{email\_intent: "unknown"} and \texttt{confidence: "low"}.
+
+For email 5, the model correctly ignored the unrelated sentences about the weather and hiking and extracted the registration request with the correct student details.
+
+\section{Discussion}
+
+The system worked well for the straightforward cases. The model followed the prompt format consistently and always returned valid JSON, which means the output constraint in the prompt was effective.
+
+The two failure cases reveal limitations of small instruction-tuned models:
+
+\paragraph{Email 3 -- Missing student ID.}
+The model correctly set \texttt{student\_id} to \texttt{null}, which shows it understood that the ID was not present. However, it did not populate the \texttt{missing\_information} array. This is likely because the prompt gave an example format at the end with an empty list, and the model followed the example rather than reasoning about which fields were actually missing. A fix would be to rewrite the instruction for \texttt{missing\_information} more explicitly, or to remove the empty list from the output example.
+
+\paragraph{Email 4 -- Ambiguous intent.}
+The model failed to detect the ambiguity in email 4. The student said they "registered last semester" but were "not sure if I should stay or withdraw." The model interpreted "registered" as the current intent and returned \texttt{register} with high confidence. This suggests the model did not apply the rule about setting intent to \texttt{unknown} when unclear. Small models often struggle with negation and uncertainty detection. One way to improve this would be to include an example in the prompt that shows an ambiguous case and the expected output.
+
+\paragraph{Email 5 -- Extra irrelevant information.}
+The model handled this well. It ignored sentences about the weather and hiking and focused on the relevant parts of the email. This is a good result because filtering noise is important in real-world use.
+
+\section{Conclusion}
+
+This assignment shows that a small instruction-tuned model can reliably extract structured information from student emails and produce valid JSON output when given a well-defined prompt. The system achieved a 5/5 valid JSON rate and was fully correct on 3 out of 5 emails.
+
+The main weaknesses were in handling the \texttt{missing\_information} field and detecting ambiguous intent. Both issues point to limitations in how small models follow multi-step conditional instructions. These could be addressed by revising the prompt with more explicit instructions and a few-shot example for the edge cases.
+
+Overall, the prompt contract approach is effective for this kind of information extraction task. Treating the prompt as a structured specification rather than a conversational message improved the reliability of the output format.
+
+\begin{thebibliography}{9}
+
+\bibitem{qwen2025}
+Qwen Team.
+\textit{Qwen2.5 Technical Report}.
+arXiv preprint arXiv:2412.15115, 2025.
+
+\bibitem{wolf2020}
+T. Wolf, L. Debut, V. Sanh, et al.
+\textit{Transformers: State-of-the-Art Natural Language Processing}.
+Proceedings of EMNLP 2020: System Demonstrations, pp. 38--45, 2020.
+
+\end{thebibliography}
+
+\appendix
+
+\section{Full JSON Outputs}
+
+\begin{lstlisting}[caption={Email 1 -- Clear registration request}]
+{
+  "student_name": "John Smith",
+  "student_id": "2045123",
+  "email_intent": "register",
+  "course_or_exam": "Advanced Topics in Neurocomputing",
+  "confidence": "high",
+  "missing_information": []
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Email 2 -- Clear deregistration request}]
+{
+  "student_name": "Maria Garcia",
+  "student_id": "2045456",
+  "email_intent": "deregister",
+  "course_or_exam": "Advanced Topics in Neurocomputing",
+  "confidence": "high",
+  "missing_information": []
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Email 3 -- Missing student ID}]
+{
+  "student_name": "Ahmed Hassan",
+  "student_id": null,
+  "email_intent": "register",
+  "course_or_exam": "Quantum Computing module",
+  "confidence": "high",
+  "missing_information": []
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Email 4 -- Ambiguous intent}]
+{
+  "student_name": "Lisa Chen",
+  "student_id": "2045789",
+  "email_intent": "register",
+  "course_or_exam": "Advanced Topics in Neurocomputing",
+  "confidence": "high",
+  "missing_information": []
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Email 5 -- Extra irrelevant information}]
+{
+  "student_name": "Tom Brown",
+  "student_id": "2045321",
+  "email_intent": "register",
+  "course_or_exam": "AI Agents",
+  "confidence": "high",
+  "missing_information": []
+}
+\end{lstlisting}
+
+\end{document}

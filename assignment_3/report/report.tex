@@ -1,0 +1,123 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{parskip}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{cite}
+\usepackage{graphicx}
+
+\title{Assignment 3: RAG Chat System\\
+\large Build a Simple Retrieval-Augmented Generation Pipeline}
+\author{
+    Student ID: 12349031 \\
+    \small Course: 700.390 Advanced Topics in Neurocomputing:\\
+    \small Explainability, Neuro-Symbolic Computing, AI Agents, LLM,\\
+    \small Quantum Computing, PINN
+}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Overview}
+
+This assignment builds a simple Retrieval-Augmented Generation (RAG) chat system. The system reads uploaded PDF files, splits the text into overlapping chunks, indexes them using FAISS, and answers questions by retrieving relevant chunks and passing them to a language model. The model is instructed to answer only from the retrieved content. If the answer is not found in the documents, the system returns ``Insufficient evidence.''
+
+\section{System Pipeline}
+
+The pipeline has six steps as required by the assignment:
+
+\begin{enumerate}
+    \item \textbf{Upload:} The user uploads PDF files via Google Colab. Three documents were used: \texttt{course\_policy.pdf}, \texttt{lab\_guide.pdf}, and \texttt{faq.pdf}.
+    \item \textbf{Parse:} Text is extracted from each PDF using the \texttt{pypdf} library. The original file name is kept as metadata for each document.
+    \item \textbf{Chunk:} Each document is split into overlapping chunks of 500 characters with an overlap of 100 characters. Each chunk stores the source file name.
+    \item \textbf{Embed and Index:} Chunks are embedded using \texttt{sentence-transformers/all-MiniLM-L6-v2} \cite{reimers2019} (384 dimensions) and indexed with a FAISS flat L2 index \cite{johnson2021}.
+    \item \textbf{Retrieve:} For each query, the top-3 most similar chunks are retrieved by embedding the query and searching the FAISS index.
+    \item \textbf{Answer:} The retrieved chunks and the question are passed to \texttt{Qwen/Qwen3.5-0.8B} \cite{qwen2025}. The model is instructed to answer only from the context. Sources are cited by file name.
+\end{enumerate}
+
+\section{Results}
+
+The system was evaluated on 10 test questions: 8 with answers present in the documents, and 2 with no answer available (abstention cases). Table~\ref{tab:results} shows the output for each question.
+
+\begin{table}[H]
+\centering
+\caption{Evaluation results for all 10 test questions}
+\label{tab:results}
+\renewcommand{\arraystretch}{1.2}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{clp{5.2cm}lll}
+\toprule
+\textbf{\#} & \textbf{Question (short)} & \textbf{Answer (short)} & \textbf{Source} & \textbf{Grounded} & \textbf{Time} \\
+\midrule
+1 & Late submission penalty?       & 10\% penalty                    & course\_policy.pdf & Yes & 0.79s \\
+2 & How is final grade calculated? & 60\% assignments, 40\% exam     & course\_policy.pdf & Yes & 7.22s \\
+3 & When are office hours?         & Mon 2--4pm, Wed 10am--12pm      & course\_policy.pdf & Yes & 1.74s \\
+4 & How many assignments?          & 4 assignments                   & course\_policy.pdf & Yes & 1.29s \\
+5 & Packages to install?           & transformers, torch, faiss...   & lab\_guide.pdf     & Yes & 1.86s \\
+6 & Recommended GPU?               & A100 or T4 on Colab             & lab\_guide.pdf     & Yes & 1.02s \\
+7 & Submit in groups?              & No, individually                & faq.pdf            & Yes & 1.93s \\
+8 & Use pre-trained models?        & Yes, cite them                  & faq.pdf            & Yes & 1.97s \\
+9 & Capital of Germany?            & ``Berlin'' (should abstain)     & ---                & ---  & 0.65s \\
+10 & How does BERT work?           & Insufficient evidence.          & ---                & N/A  & 0.80s \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Evaluation Metrics Summary}
+
+\begin{table}[H]
+\centering
+\caption{Summary of required evaluation metrics}
+\label{tab:metrics}
+\begin{tabular}{lll}
+\toprule
+\textbf{Metric}              & \textbf{Result}         & \textbf{Notes} \\
+\midrule
+Retrieval quality            & 8/8                     & Correct source retrieved for all answerable questions \\
+Grounding / faithfulness     & 8/8                     & All answers supported by retrieved chunks \\
+Source correctness           & 8/8                     & File names cited correctly for all answerable questions \\
+Latency                      & 1.93s average           & Range: 0.65s -- 7.22s per question \\
+Abstention                   & 1/2                     & Q10 returned ``Insufficient evidence.'', Q9 did not \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discussion}
+
+The system performed well on all eight answerable questions. Answers were accurate, grounded in the retrieved chunks, and sources were cited correctly by file name. The average latency was 1.93 seconds per question, which is reasonable for a model of this size.
+
+The one failure was question 9 (``What is the capital of Germany?''). The model answered ``Berlin'' even though the answer was not in any of the uploaded documents. This is a known limitation of small instruction-tuned models: they use their training-time knowledge when the context does not contain an obvious answer. A stronger grounding mechanism, such as stricter prompt constraints or output filtering, would be needed to prevent this.
+
+Question 10 (``How does BERT compute self-attention?'') was handled correctly. The model returned ``Insufficient evidence.'' because the documents contain no information about BERT.
+
+\section{Conclusion}
+
+The RAG pipeline was implemented end-to-end and ran successfully on Google Colab. The system correctly parses uploaded PDFs, retrieves relevant chunks, cites sources by file name, and answers only from the retrieved content in most cases. The main limitation is that small models can still leak training-time knowledge when they confidently know an answer, even if it is not supported by the context.
+
+\begin{thebibliography}{9}
+
+\bibitem{qwen2025}
+Qwen Team.
+\textit{Qwen3.5 Technical Report}.
+Hugging Face, 2025.
+
+\bibitem{reimers2019}
+N. Reimers and I. Gurevych.
+\textit{Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks}.
+Proceedings of EMNLP, 2019.
+
+\bibitem{johnson2021}
+J. Johnson, M. Douze, and H. Jegou.
+\textit{Billion-scale similarity search with GPUs}.
+IEEE Transactions on Big Data, 7(3):535--547, 2021.
+
+\end{thebibliography}
+
+\end{document}

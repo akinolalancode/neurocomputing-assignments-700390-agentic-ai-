@@ -1,0 +1,13 @@
+{
+  "scenario": "Clear deregistration request",
+  "email": "Dear Professor,\nI need to deregister from the Advanced Topics in Neurocomputing exam scheduled for next month.\nMy name is Maria Garcia, student ID 2045456.\nThank you,\nMaria",
+  "output": {
+    "student_name": "Maria Garcia",
+    "student_id": "2045456",
+    "email_intent": "deregister",
+    "course_or_exam": "Advanced Topics in Neurocomputing",
+    "confidence": "high",
+    "missing_information": []
+  },
+  "valid": true
+}

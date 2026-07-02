@@ -1,0 +1,92 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Model cache / large binary files
+.cache/
+*.bin
+*.safetensors
+models/
+*.pkl
+*.pt
+*.pth
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.bbl
+*.blg
+
+# Submission archives and staging folders
+submission_assignment*/
+*.zip
+
+# Scratch / temp files
+Untitled*.ipynb
+init_git.ps1
+PROJECT_SUMMARY.md
+START_HERE.md
+.mypy_cache/
+
+# Course docs (not part of code submission)
+assignment_3/docs/
+
+# Colab residual files
+assignment_2/results/.config/
+assignment_2/results/sample_data/
+assignment_one.png
+
+# Results
+*.png
+*.jpg
+*.jpeg
+!assignment_one.png
+!assignment_1/report/figures/*.png
+
+# Misc
+.env
+*.tmp

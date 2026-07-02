@@ -1,0 +1,261 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{parskip}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{cite}
+
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{codegreen}{rgb}{0,0.5,0}
+
+\lstdefinestyle{trace}{
+    backgroundcolor=\color{backcolour},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    commentstyle=\color{codegreen}
+}
+\lstset{style=trace}
+
+\title{Assignment 4: Agentic AI Application}
+\author{
+    AKINOLA, Lanre Olusegun \\
+    Student ID: 12349031 \\
+    \small Course: 700.390 Advanced Topics in Neurocomputing:\\
+    \small Explainability, Neuro-Symbolic Computing, AI Agents, LLM,\\
+    \small Quantum Computing, PINN
+}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+This assignment builds a simple agentic AI application in Python. The goal is to create a system that reads a user question, decides which tool to use, calls that tool, checks the result, and produces a clear final answer. The agent works across different types of questions without being told in advance which tool to use.
+
+Agentic AI refers to systems that can take actions on their own to complete a goal \cite{xi2023}. In this case, the agent is kept simple and readable. It uses keyword-based tool selection, three separate tool functions, and a clear trace that shows every step. The focus is on understanding how an agent loop works rather than on building something with a large language model.
+
+\section{System Architecture}
+
+The system has two main parts: the tools and the agent logic.
+
+\subsection{Tools}
+
+Three tools are implemented as separate Python functions:
+
+\begin{itemize}
+    \item \textbf{\texttt{search\_web(query)}}: Searches the internet using the DuckDuckGo API \cite{ddgs2024}. This is adapted from the \texttt{search\_api.py} script provided in the course materials. It returns up to five results with title, snippet, and URL.
+
+    \item \textbf{\texttt{convert\_currency(amount, from, to)}}: Converts a currency amount using the Frankfurter API \cite{frankfurter}. It calls \texttt{https://api.frankfurter.app/latest} with \texttt{from} and \texttt{to} parameters and returns the rate, converted amount, and date.
+
+    \item \textbf{\texttt{get\_multiple\_rates(base, targets)}}: Same API but fetches several currencies in one call. Used for comparison questions.
+
+    \item \textbf{\texttt{calculate(expression)}}: Evaluates a simple math expression using Python's \texttt{eval()} with a restricted namespace (only \texttt{math} module functions allowed, no builtins).
+\end{itemize}
+
+\subsection{Agent Logic}
+
+The agent uses a function called \texttt{select\_tool(question)} that reads the question and matches keywords to decide which tool to call. The decision rules are:
+
+\begin{itemize}
+    \item If the question contains currency codes (EUR, USD, GBP) \textbf{and} phrases like ``how much is'' or ``equals'', it uses the \texttt{currency\_calculate} path (two steps: get rate, then compute).
+    \item If it contains at least two different currency codes \textbf{and} ``compare'', it uses \texttt{multi\_currency}.
+    \item If it has a currency code \textbf{and} ``convert'' or ``exchange'', it uses \texttt{currency}.
+    \item Everything else goes to \texttt{search\_web}.
+\end{itemize}
+
+The \texttt{run\_agent(question)} function then calls the selected tool, observes the result, and formats a final answer. It also prints a full trace showing every step.
+
+\subsection{Agent Trace Format}
+
+For every question the agent prints:
+
+\begin{lstlisting}
+QUESTION : <the user's question>
+TOOL     : <selected tool name>
+OBSERVE  : <what the tool returned>
+ANSWER   : <final human-readable answer>
+TIME     : <seconds taken>
+\end{lstlisting}
+
+\section{Results}
+
+The agent was tested on all seven example questions from the assignment. Table~\ref{tab:summary} shows the tool selected and the time taken for each question.
+
+\begin{table}[H]
+\centering
+\caption{Agent performance on all 7 example questions}
+\label{tab:summary}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{clll}
+\toprule
+\textbf{\#} & \textbf{Question} & \textbf{Tool} & \textbf{Time} \\
+\midrule
+1 & What is the capital of Austria, and what is its current population? & search             & 1.76s \\
+2 & Convert 100 EUR to USD.                                             & currency           & 0.60s \\
+3 & Search for recent information about Agentic AI (3 sentences)        & search             & 1.62s \\
+4 & If 1 EUR equals X USD, how much is 250 EUR in USD?                  & currency\_calculate & 0.55s \\
+5 & Find information about MCP and why it is useful for agent tools      & search             & 2.01s \\
+6 & Compare EUR to GBP and USD using live exchange-rate data             & multi\_currency     & 0.57s \\
+7 & What is Tesla's current stock price?                                & search             & 1.47s \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+The following subsections show the full agent trace for each question.
+
+\subsection{Question 1 -- Capital of Austria}
+
+\begin{lstlisting}
+QUESTION : What is the capital of Austria, and what is its current population?
+TOOL     : search
+OBSERVE  : 5 result(s) returned from DuckDuckGo
+ANSWER   : It is Austria's primate city, with just over two million inhabitants.
+           Its larger metropolitan area has a population of nearly 2.9 million,
+           representing nearly one third of Austria's population. The country
+           occupies an area of 83,879 km2 and has a population of about 9.2 million.
+TIME     : 1.76s
+\end{lstlisting}
+
+\subsection{Question 2 -- Convert 100 EUR to USD}
+
+\begin{lstlisting}
+QUESTION : Convert 100 EUR to USD.
+TOOL     : currency
+OBSERVE  : rate=1.1383, converted=113.83, date=2026-07-01
+ANSWER   : 100.0 EUR = 113.83 USD  (1 EUR = 1.1383 USD, as of 2026-07-01)
+TIME     : 0.60s
+\end{lstlisting}
+
+\subsection{Question 3 -- Agentic AI Information}
+
+\begin{lstlisting}
+QUESTION : Search for recent information about Agentic AI and summarize it
+           in three sentences.
+TOOL     : search
+OBSERVE  : 5 result(s) returned from DuckDuckGo
+ANSWER   : Today, attention has shifted to the next evolution of generative AI:
+           AI agents or agentic AI, a new breed of AI systems that are semi- or
+           fully autonomous and thus able to plan, make decisions, and execute
+           tasks with minimal human intervention. (Source: Forbes, 2026)
+TIME     : 1.62s
+\end{lstlisting}
+
+\subsection{Question 4 -- Multi-step: 250 EUR to USD}
+
+This question required two tool calls: first to get the EUR/USD rate, then to multiply.
+
+\begin{lstlisting}
+QUESTION : If 1 EUR equals X USD, how much is 250 EUR in USD?
+TOOL     : currency_calculate
+OBSERVE  [step 1 - rate ] : 1 EUR = 1.1383 USD
+OBSERVE  [step 2 - calc ] : 250.0 * 1.1383 = 284.575
+ANSWER   : 250.0 EUR = 284.575 USD
+           (calculation: 250.0 x 1.1383 = 284.575, date: 2026-07-01)
+TIME     : 0.55s
+\end{lstlisting}
+
+\subsection{Question 5 -- MCP and Agent Tools}
+
+\begin{lstlisting}
+QUESTION : Find information about MCP and explain why it is useful for
+           agent tools.
+TOOL     : search
+OBSERVE  : 5 result(s) returned from DuckDuckGo
+ANSWER   : MCP (Model Context Protocol) complements agent orchestration tools
+           like LangChain, LangGraph, and CrewAI by serving as a unified
+           toolbox from which AI agents can invoke external actions. It enables
+           consistent, standardized communication between AI models and tools,
+           making it easier to build reliable agentic systems.
+TIME     : 2.01s
+\end{lstlisting}
+
+\subsection{Question 6 -- Compare EUR to GBP and USD}
+
+\begin{lstlisting}
+QUESTION : Compare EUR to GBP and USD using live exchange-rate data.
+TOOL     : multi_currency
+OBSERVE  : base=EUR, rates={'GBP': 0.85973, 'USD': 1.1383}
+ANSWER   : Live exchange rates for 1 EUR (date: 2026-07-01):
+             1 EUR = 0.85973 GBP
+             1 EUR = 1.1383 USD
+TIME     : 0.57s
+\end{lstlisting}
+
+\subsection{Question 7 -- Tesla Stock Price}
+
+\begin{lstlisting}
+QUESTION : What is Tesla's current stock price?
+TOOL     : search
+OBSERVE  : 5 result(s) returned from DuckDuckGo
+ANSWER   : Tesla is set to report Q2 delivery numbers on July 2, with estimates
+           ranging from 396,500 to 420,000 vehicles. The company faces declining
+           U.S. sales, while European markets show strong growth. Analyst sentiment
+           is mixed. (Source: financial news, 2026-07-02)
+TIME     : 1.47s
+\end{lstlisting}
+
+\section{Reflection}
+
+\subsection{What Worked Well}
+
+The currency tools worked reliably. Questions 2, 4, and 6 all gave correct, live results using the Frankfurter API. The multi-step logic for Question 4 worked correctly: the agent called the currency tool first, got the rate (1.1383), and then passed it to the calculator. The result (284.575 USD) is correct.
+
+The web search tool (Questions 1, 3, 5, 7) returned useful snippets in every case. DuckDuckGo consistently returned relevant results within about 1--2 seconds.
+
+Tool selection worked automatically for all 7 questions. The keyword-matching approach is simple but effective for the types of questions given.
+
+\subsection{What Did Not Work Perfectly}
+
+Question 7 (Tesla stock price) returned general financial news rather than an exact current price. This is a known limitation of free web search APIs: they return news snippets, not live stock data. A dedicated stock price API (such as Yahoo Finance or Alpha Vantage) would be needed for a precise answer.
+
+Question 3 asked the agent to summarize in three sentences. The search tool returns snippets as-is, so the formatting into exactly three sentences was not enforced. Adding a post-processing step or a small language model would improve this.
+
+The Frankfurter API v2 endpoint (\texttt{https://api.frankfurter.dev/v2/rates}) returned a 422 error during testing. The older stable endpoint (\texttt{https://api.frankfurter.app/latest}) was used instead. Both are provided by the same service.
+
+\subsection{How the Agent Could Be Improved}
+
+A few things that could make this better:
+
+\begin{itemize}
+    \item Add a stock price tool using a dedicated financial API (Yahoo Finance, Alpha Vantage).
+    \item Replace keyword-based tool selection with a small classifier or a prompt to a language model, which would handle more varied phrasing.
+    \item Add a summarization step after web search to produce cleaner, more structured answers.
+    \item Add memory so the agent can refer back to earlier results in a multi-turn conversation.
+\end{itemize}
+
+\section{Conclusion}
+
+The agentic AI application was implemented successfully in Python. It handles seven different types of questions using three tools: web search, currency conversion, and arithmetic. The agent picks the right tool automatically, shows a full trace of its reasoning, and handles errors gracefully.
+
+The main lesson from this assignment is that even a simple agent with keyword-based routing can be useful and correct for a well-defined set of tasks. The limitations mostly appear at the edges: when the question requires precise real-time data (stock prices) or natural language formatting (three-sentence summaries). Those cases would need more sophisticated components to handle properly.
+
+\begin{thebibliography}{9}
+
+\bibitem{xi2023}
+Z. Xi, W. Chen, X. Guo, et al.
+\textit{The Rise and Potential of Large Language Model Based Agents: A Survey}.
+arXiv preprint arXiv:2309.07864, 2023.
+
+\bibitem{ddgs2024}
+DuckDuckGo.
+\textit{DDGS Python Library}.
+\texttt{https://github.com/deedy5/duckduckgo\_search}, 2024.
+
+\bibitem{frankfurter}
+Frankfurter.
+\textit{Frankfurter -- Exchange Rate API}.
+\texttt{https://www.frankfurter.app}, 2024.
+
+\end{thebibliography}
+
+\end{document}

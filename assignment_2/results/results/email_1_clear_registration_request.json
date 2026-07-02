@@ -1,0 +1,13 @@
+{
+  "scenario": "Clear registration request",
+  "email": "Dear Professor,\nI would like to register for the Advanced Topics in Neurocomputing course.\nMy name is John Smith and my student ID is 2045123.\nBest regards,\nJohn",
+  "output": {
+    "student_name": "John Smith",
+    "student_id": "2045123",
+    "email_intent": "register",
+    "course_or_exam": "Advanced Topics in Neurocomputing",
+    "confidence": "high",
+    "missing_information": []
+  },
+  "valid": true
+}

@@ -1,0 +1,13 @@
+{
+  "scenario": "Ambiguous intent",
+  "email": "Dear Professor,\nI am writing regarding the Advanced Topics in Neurocomputing course.\nI registered last semester but I am not sure if I should stay in the course or withdraw.\nMy name is Lisa Chen, student ID 2045789.\nThanks,\nLisa",
+  "output": {
+    "student_name": "Lisa Chen",
+    "student_id": "2045789",
+    "email_intent": "register",
+    "course_or_exam": "Advanced Topics in Neurocomputing",
+    "confidence": "high",
+    "missing_information": []
+  },
+  "valid": true
+}

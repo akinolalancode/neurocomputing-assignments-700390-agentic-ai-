@@ -1,0 +1,13 @@
+{
+  "scenario": "Extra irrelevant information",
+  "email": "Dear Professor,\nI hope you are having a great summer. I went hiking last weekend and it was wonderful.\nAnyway, I wanted to let you know that I would like to register for the AI Agents course.\nThe weather here has been really nice lately.\nMy name is Tom Brown, student ID 2045321.\nPlease let me know if you need anything else from me.\nBest wishes,\nTom",
+  "output": {
+    "student_name": "Tom Brown",
+    "student_id": "2045321",
+    "email_intent": "register",
+    "course_or_exam": "AI Agents",
+    "confidence": "high",
+    "missing_information": []
+  },
+  "valid": true
+}

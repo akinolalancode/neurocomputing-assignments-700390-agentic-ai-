@@ -1,0 +1,211 @@
+[
+  {
+    "id": 1,
+    "question": "What is the late submission penalty?",
+    "answer": "The late submission penalty is 10%.",
+    "sources_cited": [
+      "course_policy.pdf",
+      "faq.pdf"
+    ],
+    "retrieved_sources": [
+      "course_policy.pdf",
+      "course_policy.pdf",
+      "faq.pdf"
+    ],
+    "expected_source": "course_policy.txt",
+    "retrieval_hit": false,
+    "grounded": true,
+    "abstained": false,
+    "abstention_ok": true,
+    "answerable": true,
+    "latency": 0.79
+  },
+  {
+    "id": 2,
+    "question": "How is the final grade calculated?",
+    "answer": "The final grade is calculated as follows:\n- Assignments count for 60% of the final grade.\n- The written exam counts for 40%.\n- There are 4 assignments in total, each worth 15% of the final grade.\n- Late Submission Policy: Assignments submitted up to 48 hours late receive a 10% penalty. Assignments submitted more than 48 hours late will not be accepted and receive a grade of 0.\n- Attendance: Students are expected to attend at least 80% of all lectures. Missing more than 20% of lectures may result in failing the course.",
+    "sources_cited": [
+      "course_policy.pdf"
+    ],
+    "retrieved_sources": [
+      "course_policy.pdf",
+      "course_policy.pdf",
+      "course_policy.pdf"
+    ],
+    "expected_source": "course_policy.txt",
+    "retrieval_hit": false,
+    "grounded": true,
+    "abstained": false,
+    "abstention_ok": true,
+    "answerable": true,
+    "latency": 7.22
+  },
+  {
+    "id": 3,
+    "question": "When are the instructor's office hours?",
+    "answer": "Monday from 2pm to 4pm and on Wednesday from 10am to 12pm.",
+    "sources_cited": [
+      "course_policy.pdf",
+      "faq.pdf"
+    ],
+    "retrieved_sources": [
+      "course_policy.pdf",
+      "faq.pdf",
+      "course_policy.pdf"
+    ],
+    "expected_source": "course_policy.txt",
+    "retrieval_hit": false,
+    "grounded": true,
+    "abstained": false,
+    "abstention_ok": true,
+    "answerable": true,
+    "latency": 1.74
+  },
+  {
+    "id": 4,
+    "question": "How many assignments are in the course?",
+    "answer": "Based on the context provided, there are 4 assignments in total.",
+    "sources_cited": [
+      "course_policy.pdf"
+    ],
+    "retrieved_sources": [
+      "course_policy.pdf",
+      "course_policy.pdf",
+      "course_policy.pdf"
+    ],
+    "expected_source": "course_policy.txt",
+    "retrieval_hit": false,
+    "grounded": true,
+    "abstained": false,
+    "abstention_ok": true,
+    "answerable": true,
+    "latency": 1.29
+  },
+  {
+    "id": 5,
+    "question": "What packages do I need to install for the labs?",
+    "answer": "Install the following packages: transformers, torch, accelerate, sentencepiece, faiss-cpu, sentence-transformers, pypdf",
+    "sources_cited": [
+      "course_policy.pdf",
+      "lab_guide.pdf"
+    ],
+    "retrieved_sources": [
+      "lab_guide.pdf",
+      "course_policy.pdf",
+      "course_policy.pdf"
+    ],
+    "expected_source": "lab_guide.txt",
+    "retrieval_hit": false,
+    "grounded": true,
+    "abstained": false,
+    "abstention_ok": true,
+    "answerable": true,
+    "latency": 1.86
+  },
+  {
+    "id": 6,
+    "question": "Which GPU is recommended for experiments?",
+    "answer": "Google Colab using an A100 or T4 GPU.",
+    "sources_cited": [
+      "course_policy.pdf",
+      "faq.pdf",
+      "lab_guide.pdf"
+    ],
+    "retrieved_sources": [
+      "lab_guide.pdf",
+      "course_policy.pdf",
+      "faq.pdf"
+    ],
+    "expected_source": "lab_guide.txt",
+    "retrieval_hit": false,
+    "grounded": true,
+    "abstained": false,
+    "abstention_ok": true,
+    "answerable": true,
+    "latency": 1.02
+  },
+  {
+    "id": 7,
+    "question": "Can I submit assignments in groups?",
+    "answer": "No. All assignments must be submitted individually. Group discussion is allowed but submitted code and reports must be entirely your own work. Do not share files with other students.",
+    "sources_cited": [
+      "course_policy.pdf",
+      "faq.pdf"
+    ],
+    "retrieved_sources": [
+      "faq.pdf",
+      "course_policy.pdf",
+      "course_policy.pdf"
+    ],
+    "expected_source": "faq.txt",
+    "retrieval_hit": false,
+    "grounded": true,
+    "abstained": false,
+    "abstention_ok": true,
+    "answerable": true,
+    "latency": 1.93
+  },
+  {
+    "id": 8,
+    "question": "Can I use pre-trained models from Hugging Face?",
+    "answer": "Yes. You are encouraged to use pre-trained models. Always cite the model name and the Hugging Face repository in your report or notebook.",
+    "sources_cited": [
+      "faq.pdf",
+      "lab_guide.pdf"
+    ],
+    "retrieved_sources": [
+      "faq.pdf",
+      "lab_guide.pdf",
+      "lab_guide.pdf"
+    ],
+    "expected_source": "faq.txt",
+    "retrieval_hit": false,
+    "grounded": true,
+    "abstained": false,
+    "abstention_ok": true,
+    "answerable": true,
+    "latency": 1.97
+  },
+  {
+    "id": 9,
+    "question": "What is the capital of Germany?",
+    "answer": "Berlin",
+    "sources_cited": [
+      "faq.pdf",
+      "lab_guide.pdf"
+    ],
+    "retrieved_sources": [
+      "lab_guide.pdf",
+      "lab_guide.pdf",
+      "faq.pdf"
+    ],
+    "expected_source": null,
+    "retrieval_hit": true,
+    "grounded": null,
+    "abstained": false,
+    "abstention_ok": false,
+    "answerable": false,
+    "latency": 0.65
+  },
+  {
+    "id": 10,
+    "question": "How does BERT compute self-attention?",
+    "answer": "Insufficient evidence.",
+    "sources_cited": [
+      "course_policy.pdf",
+      "lab_guide.pdf"
+    ],
+    "retrieved_sources": [
+      "course_policy.pdf",
+      "lab_guide.pdf",
+      "lab_guide.pdf"
+    ],
+    "expected_source": null,
+    "retrieval_hit": true,
+    "grounded": null,
+    "abstained": true,
+    "abstention_ok": true,
+    "answerable": false,
+    "latency": 0.8
+  }
+]
