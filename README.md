@@ -1,6 +1,6 @@
 # 700.390 Advanced Topics in Neurocomputing — Assignments
 
-**Student:** AKINOLA, Lanre Olusegun | **ID:** 12349031
+**Student:** Lanre Olusegun AKINOLA | **ID:** 12349031
 
 Course assignments covering LLM code generation, intent classification, retrieval-augmented generation (RAG), and agentic AI with tool use.
 
@@ -39,11 +39,17 @@ Course assignments covering LLM code generation, intent classification, retrieva
 ### Assignment 1 — LLM Code Generation
 Evaluated `Qwen2.5-Coder-0.5B` on generating iterative and recursive Fibonacci implementations. Tested across different temperature and generation settings to measure correctness and consistency.
 
+📄 [Download Report (PDF)](assignment_1/report/Report_Assignment1.pdf)
+
 ### Assignment 2 — Email Intent Extraction
 Used `Qwen2.5-1.5B` to classify intent from raw email text (e.g., complaint, inquiry, request). Compared zero-shot vs. few-shot prompting strategies.
 
+📄 [Download Report (PDF)](assignment_2/report/Report_Assignment2.pdf)
+
 ### Assignment 3 — Retrieval-Augmented Generation (RAG)
 Built a RAG chat system using FAISS for vector retrieval and a local Qwen model for generation. Evaluated retrieval accuracy and answer quality on course-related documents.
+
+📄 [Download Report (PDF)](assignment_3/report/Report_Assignment3.pdf)
 
 ### Assignment 4 — Agentic AI with Tool Use
 Implemented a ReAct-style agent in pure Python with three tools:
@@ -52,6 +58,8 @@ Implemented a ReAct-style agent in pure Python with three tools:
 - **`calculate`** — Safe math expression evaluator
 
 The agent routes questions to the appropriate tool using keyword-based selection and logs a full QUESTION → TOOL → OBSERVE → ANSWER → TIME trace for each query.
+
+📄 [Download Report (PDF)](assignment_4/report/Report_Assignment4.pdf)
 
 ```bash
 # Run the agent
