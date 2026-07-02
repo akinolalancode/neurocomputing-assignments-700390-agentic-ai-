@@ -1,0 +1,11 @@
+# Treat all PDF and binary files as binary — prevents CRLF corruption
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.pkl binary
+*.bin binary
+*.db binary
